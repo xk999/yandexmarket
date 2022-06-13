@@ -5,21 +5,17 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 import time
 import random
-from pages.locators import *
+from locators import *
 
 link = "https://www.yandex.ru"
 
-def open_market():
-    market = browser.find_element(*MainPageLocators.MARKET_ICON)
-    market.click()
-
-def open_electronics_page():
-    electronics = browser.find_element(*MarketPageLocators.ELECTRONICS_LINK)
-    electronics.click()
-  
 def open_phones_page():
-    phones = browser.find_element(*ElectronicsPageLocators.PHONES_LINK)
-    phones.click()
+    default_tab = browser.window_handles[0]
+    browser.find_element(*MainPageLocators.MARKET_ICON).click()
+    market_tab = browser.window_handles[1]
+    browser.switch_to.window(market_tab)
+    browser.find_element(*MarketPageLocators.ELECTRONICS_LINK).click()
+    browser.find_element(*ElectronicsPageLocators.PHONES_LINK).click()
     
 def open_filters():
     filters = browser.find_element(*PhonesPageLocators.ALL_FILTERS)
@@ -28,14 +24,14 @@ def open_filters():
 def set_max_price():
     max_price = browser.find_element(*FiltersPageLocators.MAX_PRICE)
     max_price.send_keys('20000')
-  
+
 def set_screen_diagonal():
     diagonal_expand = browser.find_element(*FiltersPageLocators.DIAGONAL_EXPAND)
     browser.execute_script("arguments[0].scrollIntoView();", diagonal_expand)
     diagonal_expand.click()
     diagonal_input = browser.find_element(*FiltersPageLocators.DIAGONAL_INPUT)
     diagonal_input.send_keys('3')    
-    
+        
 def select_popular_brands():
     brands = ['Apple', 'ASUS', 'Google', 'HONOR', 'HUAWEI', 'Nokia', 'Samsung', 'vivo', 'Xiaomi']
     expand_brands = browser.find_element(*FiltersPageLocators.MORE_BRANDS)
@@ -46,7 +42,7 @@ def select_popular_brands():
         try:
             path1 = f"//label/input[@disabled][@value='{i}']"
             browser.implicitly_wait(3)
-            browser.find_element_by_xpath(path1)
+            browser.find_element(By.XPATH, path1)
             available_brands.remove(f'{i}')
         except NoSuchElementException:
             pass
@@ -57,7 +53,7 @@ def select_popular_brands():
     print(random_brands)
     for i in random_brands:
         path2 = f"//label/input[@value='{i}']"
-        brand = browser.find_element_by_xpath(path2)
+        brand = browser.find_element(By.XPATH, path2)
         browser.execute_script("arguments[0].click();", brand)
 
 def show_offers():
@@ -74,13 +70,6 @@ def change_sorting():
     sort_by_price.click()
     time.sleep(2)
 
-'''def find_selected_product():
-    phone_path = f"//span[contains(.,'{phone_name}')]"
-    browser.implicitly_wait(3)
-    selected_phone = browser.find_element_by_xpath(phone_path)
-    selected_phone.click()'''
-
-
 def find_phone():
     global phone_is_found
     phone_is_found = False
@@ -88,9 +77,8 @@ def find_phone():
         try:
             browser.implicitly_wait(2)
             phone_path = f"//span[contains(.,'{phone_name}')]"
-            phone = browser.find_element_by_xpath(phone_path)
+            phone = browser.find_element(By.XPATH, phone_path)
             browser.execute_script("arguments[0].click();", phone)
-            #phone.click()
             phone_is_found = True
         except NoSuchElementException:
             try:
@@ -105,27 +93,29 @@ def get_rating():
     rating_text = browser.execute_script('return arguments[0].textContent;', rating)
     print("Рейтинг смартфона: " + rating_text)  
 
+def quantity_check():
+    browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    items = browser.find_elements(*PhonesPageLocators.ITEM)
+    print("Количество товаров на странице: " + str(len(items)))
+    assert len(items) >= 10, "Товаров меньше 10"
+
 browser = webdriver.Chrome()
 browser.implicitly_wait(3)
 browser.maximize_window() 
 browser.get(link)
-default_tab = browser.window_handles[0]
-open_market()
-market_tab = browser.window_handles[1]
-browser.switch_to.window(market_tab)
-open_electronics_page()
 open_phones_page()
 open_filters()
 set_max_price()
 set_screen_diagonal()
 select_popular_brands()
 show_offers()
+quantity_check() 
 get_first_product_name()
 change_sorting()
 find_phone()
 if phone_is_found == True:
     product_tab = browser.window_handles[2]
     browser.switch_to.window(product_tab)
-    get_rating()
+    get_rating()   
 time.sleep(2)
 browser.quit()
