@@ -1,5 +1,4 @@
-# yandexmarket
-Тестовое задание
+## Тестовое задание
 
 СЦЕНАРИЙ ДОЛЖЕН ОСУЩЕСТВЛЯТЬ ОПИСАННЫЕ НИЖЕ ДЕЙСТВИЯ:
 1. Открыть браузер и развернуть на весь экран.
@@ -16,4 +15,7 @@
 12. Вывести цифровое значение его оценки.
 13. Закрыть браузер.
 
-![Image](https://raw.githubusercontent.com/xk999/yandexmarket/main/Screenshot.jpg)
+## Процесс и результат
+
+![yandex](https://user-images.githubusercontent.com/83287741/176206734-30b5e8e4-8840-44c9-b30e-1b6829e62fef.gif)
+![ynd](https://user-images.githubusercontent.com/83287741/176206932-b55e6ca8-7bde-44c5-85c1-4f1f9bd1aee6.jpg)
